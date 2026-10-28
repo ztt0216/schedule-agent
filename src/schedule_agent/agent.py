@@ -25,7 +25,8 @@ SYSTEM_PROMPT = """你是内容团队的"素材审核与发布排期"助手。�
    同一草稿内不同素材不能占用同一时段。
 4. 工具返回 tool_unavailable 时可以重试一次；仍失败则把相关素材标记为 unresolved 并说明。
 5. 所有可排期素材（confirmed 或 pending_confirmation）一次性用 save_draft 保存。
-   save_draft 返回 storage_unavailable 时可重试一次；仍失败也必须如实结束，不能声称已保存。
+   save_draft 返回 storage_unavailable / storage_error 时可重试一次；仍失败则相关素材标记 unresolved，如实说明未保存，
+   不能给出 scheduled / pending_confirmation，也不能声称已保存或已排期。
    返回 validation_failed 时按 violations 修正后再保存。
 6. 最后调用 finish 提交每个素材的结论。不要声称任何内容"已发布"。
 每次调用都要在 reason 参数里用一句话写明决策依据。"""
@@ -81,8 +82,7 @@ def validate_finish(ex: ToolExecutor, items: list[dict]) -> list[str]:
     for mid in ex.req_items:
         if ids.count(mid) != 1:
             v.append(f"{mid}: 必须且只能给出一个结论")
-    attempted = {e["material_id"]: e for e in (ex.last_save_entries or [])}
-    written = attempted if (ex.save_result or {}).get("ok") else {}
+    written = _written_entries(ex)
     for it in items:
         mid, d = it.get("material_id"), it.get("decision")
         f = ex.facts.get(mid)
@@ -90,9 +90,11 @@ def validate_finish(ex: ToolExecutor, items: list[dict]) -> list[str]:
             v.append(f"{mid}: 不在本次请求中")
             continue
         if d in ("scheduled", "pending_confirmation"):
-            e = attempted.get(mid)
+            e = written.get(mid)
             want = "confirmed" if d == "scheduled" else "pending_confirmation"
-            if e is None:
+            if e is None and ex.last_save_entries is not None and not ex.save_result["ok"]:
+                v.append(f"{mid}: 草稿保存失败、未写入，不能给出 {d}；请改为 unresolved 并说明保存失败")
+            elif e is None:
                 v.append(f"{mid}: 结论为 {d}，但没有写入草稿，请先调用 save_draft")
             elif e["status"] != want:
                 v.append(f"{mid}: 结论 {d} 与草稿状态 {e['status']} 不一致")
@@ -111,6 +113,13 @@ def validate_finish(ex: ToolExecutor, items: list[dict]) -> list[str]:
     return v
 
 
+def _written_entries(ex: ToolExecutor) -> dict[str, dict]:
+    """只有存储层确认写入成功的条目才算数；保存失败时尝试写入的条目不算。"""
+    if not (ex.save_result or {}).get("ok"):
+        return {}
+    return {e["material_id"]: e for e in (ex.last_save_entries or [])}
+
+
 def _review_status(f) -> str:
     if f.not_found or f.missing_fields or f.request_missing:
         return "missing_info"
@@ -126,13 +135,15 @@ def _review_status(f) -> str:
 
 
 def build_report(ex: ToolExecutor, items: list[dict] | None, stop_reason: str, summary: str = "") -> dict:
-    saved = {e["material_id"]: e for e in (ex.last_save_entries or [])}
+    saved = _written_entries(ex)
+    attempted = {e["material_id"]: e for e in (ex.last_save_entries or [])}
     by_mid = {i["material_id"]: i for i in (items or [])}
     out_items = []
     for mid, req in ex.req_items.items():
         f = ex.facts[mid]
         it = by_mid.get(mid, {"decision": "unresolved", "pending_questions": ["任务未完成，未得出结论"]})
         e = saved.get(mid)
+        unsaved = attempted.get(mid) if e is None else None
         out_items.append({
             "material_id": mid,
             "requested": {k: req.get(k) for k in ("channel", "date", "time")},
@@ -141,6 +152,8 @@ def build_report(ex: ToolExecutor, items: list[dict] | None, stop_reason: str, s
             "decision": it["decision"],
             "suggested_slot": {k: e[k] for k in ("channel", "date", "time")} if e else None,
             "pending_questions": it.get("pending_questions") or [],
+            # 保存失败时，建议时段只作为"未保存的建议"给出，不作为排期结果
+            **({"unsaved_suggestion": {k: unsaved[k] for k in ("channel", "date", "time", "status")}} if unsaved else {}),
         })
     # 草稿状态只以存储层结果为准
     sr = ex.save_result

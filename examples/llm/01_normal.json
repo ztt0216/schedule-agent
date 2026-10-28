@@ -52,7 +52,7 @@
       "outcome": "created"
     },
     "published": false,
-    "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586；M05 的版权授权经补查为 verified。草稿已保存，未发布任何内容。"
+    "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586。M05 的版权授权经补查为 verified。草稿已保存但未发布，需人工确认后再发布。"
   },
   "trace": [
     {
@@ -82,7 +82,7 @@
         "material_id": "M02",
         "channel": "douyin"
       },
-      "reason": "M02 元数据齐全，需按抖音渠道规则检查风险",
+      "reason": "M02 元数据完整，需按抖音渠道规则检查风险",
       "observation": "规则检查通过",
       "next_action": "check_rules"
     },
@@ -93,7 +93,7 @@
         "material_id": "M05",
         "channel": "xiaohongshu"
       },
-      "reason": "M05 元数据齐全但授权状态为 pending，需按小红书规则检查风险",
+      "reason": "M05 元数据完整但授权状态为 pending，需按小红书渠道规则检查风险",
       "observation": "风险: R02[verify] 版权授权待核验",
       "next_action": "verify_license"
     },
@@ -103,7 +103,7 @@
       "args": {
         "material_id": "M05"
       },
-      "reason": "M05 规则检查返回 verify 级风险（版权授权待核验），需补查授权状态",
+      "reason": "M05 触发 verify 级规则 R02，需补查版权授权最新状态",
       "observation": "授权 LIC-1005: verified（授权方已回传签署件）",
       "next_action": "query_slots"
     },
@@ -154,7 +154,7 @@
           }
         ]
       },
-      "reason": "两个素材均通过审核且用户原始时段可用，按原时段保存草稿（不发布）",
+      "reason": "两个素材均通过审核且用户原始时段可用，按原时段保存为 confirmed 草稿",
       "observation": "草稿 D-f2511c7586 v1 created（未发布）",
       "next_action": "finish"
     },
@@ -178,9 +178,9 @@
             ]
           }
         ],
-        "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586；M05 的版权授权经补查为 verified。草稿已保存，未发布任何内容。"
+        "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586。M05 的版权授权经补查为 verified。草稿已保存但未发布，需人工确认后再发布。"
       },
-      "reason": "两个素材均通过审核且原时段可用，已写入草稿 D-f2511c7586，提交结论",
+      "reason": "两个素材均通过审核、时段可用并已写入草稿 D-f2511c7586，故结论为 scheduled（仅排期草稿，未发布）",
       "observation": "已接受",
       "next_action": "end"
     }

@@ -49,7 +49,7 @@ PYTHONPATH=src python -m schedule_agent run examples/requests/05_multi.json
 ## 测试
 
 ```bash
-python -m pytest -q          # 26 个用例，覆盖全部验收点和护栏
+python -m pytest -q          # 29 个用例，覆盖全部验收点和护栏
 python scripts/record_examples.py --mode mock   # 重新生成 examples/mock/
 python scripts/record_examples.py --mode llm    # 用真实模型生成 examples/llm/
 ```

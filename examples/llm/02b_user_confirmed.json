@@ -33,7 +33,7 @@
       "outcome": "updated"
     },
     "published": false,
-    "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed，未发布。"
+    "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed；仅为草稿，未发布。"
   },
   "trace": [
     {
@@ -42,7 +42,7 @@
       "args": {
         "material_id": "M01"
       },
-      "reason": "先读取 M01 元数据，确认必填字段是否齐全再进入规则检查",
+      "reason": "先读取 M01 元数据，确认必填字段是否齐全",
       "observation": "读取成功，必填字段齐全",
       "next_action": "check_rules"
     },
@@ -53,7 +53,7 @@
         "material_id": "M01",
         "channel": "douyin"
       },
-      "reason": "元数据无缺失，按抖音渠道检查 M01 的审核风险等级",
+      "reason": "元数据无缺失，按抖音渠道检查审核规则",
       "observation": "规则检查通过",
       "next_action": "query_slots"
     },
@@ -65,7 +65,7 @@
         "date": "2026-11-03",
         "time": "19:00"
       },
-      "reason": "用户已在 confirmations 中确认 M01 为 19:00，优先查询该时段是否可用",
+      "reason": "request.confirmations 中用户已确认 M01 为 19:00，优先查询该时段是否可用",
       "observation": "douyin 2026-11-03 19:00 可用；替代: ['20:00', '22:00', '16:00']",
       "next_action": "save_draft"
     },
@@ -80,11 +80,11 @@
             "date": "2026-11-03",
             "time": "19:00",
             "status": "confirmed",
-            "note": "用户已确认时段 19:00，查询可用，规则检查通过"
+            "note": "用户已确认时段 19:00，查询可用；规则检查通过"
           }
         ]
       },
-      "reason": "M01 规则检查通过且用户确认的 19:00 时段可用，按 confirmed 保存草稿",
+      "reason": "M01 规则通过且用户确认的 19:00 时段可用，按 confirmed 保存草稿",
       "observation": "草稿 D-e376ad0d2b v2 updated（未发布）",
       "next_action": "finish"
     },
@@ -100,9 +100,9 @@
             "risk_reasons": []
           }
         ],
-        "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed，未发布。"
+        "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed；仅为草稿，未发布。"
       },
-      "reason": "M01 元数据齐全、规则检查无风险，用户确认的 19:00 时段可用并已写入草稿",
+      "reason": "M01 元数据齐全、规则通过、用户确认的 19:00 时段可用并已写入草稿",
       "observation": "已接受",
       "next_action": "end"
     }

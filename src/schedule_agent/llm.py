@@ -183,13 +183,15 @@ class MockLLM:
         if entries:
             saves = calls("save_draft")
             last = saves[-1][1] if saves else None
-            retry_ok = last is not None and last.get("error") == "storage_unavailable" and len(saves) < 2
+            retry_ok = last is not None and last.get("error") in ("storage_unavailable", "storage_error") and len(saves) < 2
             if last is None or retry_ok:
                 why = "草稿存储失败，重试一次" if retry_ok else f"所有素材已判定，保存 {len(entries)} 条排期草稿"
                 return "save_draft", {"entries": entries, "reason": why}
             if not last["ok"]:
                 for d in decisions:
                     if d["decision"] in ("scheduled", "pending_confirmation"):
+                        d["decision"] = "unresolved"
+                        d.pop("suggested_time", None)
                         d.setdefault("pending_questions", []).append("草稿保存失败，未写入，需重新提交")
         summary = "；".join(f'{d["material_id"]}:{d["decision"]}' for d in decisions)
         return "finish", {"items": decisions, "summary": summary, "reason": "所有素材都已得出结论"}

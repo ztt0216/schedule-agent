@@ -141,3 +141,36 @@ def test_note_change_still_counts_as_duplicate(store_path):
     e = {**ENTRY, "time": "19:00", "status": "pending_confirmation"}
     assert s.save("D-1", [{**e, "note": "a"}])["outcome"] == "created"
     assert s.save("D-1", [{**e, "note": "b"}])["outcome"] == "duplicate"
+
+
+def test_finish_cannot_claim_scheduled_after_save_failure(store_path):
+    req = load_request("02b_slot_conflict_confirmed.json")
+    ex = ToolExecutor(Dataset.load(), DraftStore(store_path), req, {"save_draft": 1})
+    prepare_m01(ex)
+    ex.call("save_draft", {"entries": [{**ENTRY, "time": "19:00", "status": "confirmed"}]})
+    v = validate_finish(ex, [{"material_id": "M01", "decision": "scheduled", "suggested_time": "19:00"}])
+    assert any("保存失败" in x for x in v)
+
+
+def test_real_storage_error_becomes_failed_report(run, tmp_path):
+    (tmp_path / "blocker").write_text("not a dir")
+    bad_store = tmp_path / "blocker" / "sub" / "drafts.json"
+    req = load_request("02_slot_conflict.json")
+    ex = ToolExecutor(Dataset.load(), DraftStore(bad_store), req)
+    from schedule_agent.agent import run_agent
+    from schedule_agent.llm import MockLLM
+
+    res = run_agent(req, MockLLM(), ex)
+    assert [s.observation.split(":")[0] for s in res.trace if s.action == "save_draft"] == ["失败 storage_error"] * 2
+    assert res.report["task_status"] == "save_failed"
+    assert res.report["draft"] == {"status": "failed", "error": "storage_error"}
+    assert item(res.report, "M01")["decision"] == "unresolved"
+
+
+def test_invalid_time_rejected(store_path):
+    ex = make_ex(store_path)
+    prepare_m01(ex)
+    for t in ("99:99", "18:30", "03:00"):
+        obs = ex.call("save_draft", {"entries": [{**ENTRY, "time": t, "status": "pending_confirmation"}]})
+        assert any("非法" in v for v in obs["violations"]), t
+    assert not store_path.exists()

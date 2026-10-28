@@ -19,18 +19,18 @@
         },
         "review_status": "passed",
         "risk_reasons": [
-          "原时段 18:00 被 X90 占用，替代时段 19:00 需用户确认",
-          "save_draft 连续两次返回 storage_unavailable，草稿未写入"
+          "原时段 2026-11-03 18:00 已被 X90 占用，替代时段 19:00 需用户确认",
+          "草稿存储连续两次返回 storage_unavailable，草稿未写入，无法给出排期结论"
         ],
         "decision": "unresolved",
-        "suggested_slot": {
+        "suggested_slot": null,
+        "pending_questions": [],
+        "unsaved_suggestion": {
           "channel": "douyin",
           "date": "2026-11-03",
-          "time": "19:00"
-        },
-        "pending_questions": [
-          "草稿存储连续两次不可用，未能写入排期；请稍后重试，并确认是否接受替代时段 2026-11-03 19:00（原 18:00 已被 X90 占用）"
-        ]
+          "time": "19:00",
+          "status": "pending_confirmation"
+        }
       }
     ],
     "draft": {
@@ -38,7 +38,7 @@
       "error": "storage_unavailable"
     },
     "published": false,
-    "summary": "M01（秋冬穿搭 5 套通勤公式）元数据完整、douyin 渠道规则检查通过。用户要求的 2026-11-03 18:00 已被 X90 占用，拟改用替代时段 19:00 并标记为待确认。但 save_draft 连续两次返回 storage_unavailable，草稿未能写入，因此未排期成功，也未发布任何内容。请稍后重试并确认是否接受 19:00。"
+    "summary": "M01 元数据齐全、规则检查通过；但用户要求的 2026-11-03 18:00 已被 X90 占用，建议替代时段 19:00（需用户确认）。草稿保存两次均返回 storage_unavailable，未写入任何草稿，因此 M01 结论为 unresolved，未排期、未发布。"
   },
   "trace": [
     {
@@ -47,7 +47,7 @@
       "args": {
         "material_id": "M01"
       },
-      "reason": "请求字段齐全，先读取 M01 元数据确认必填字段是否完整",
+      "reason": "先读取 M01 元数据，确认必填字段是否齐全",
       "observation": "读取成功，必填字段齐全",
       "next_action": "check_rules"
     },
@@ -58,7 +58,7 @@
         "material_id": "M01",
         "channel": "douyin"
       },
-      "reason": "元数据无缺失，按 douyin 渠道规则检查 M01 的审核风险",
+      "reason": "元数据无缺失，按抖音渠道检查审核规则",
       "observation": "规则检查通过",
       "next_action": "query_slots"
     },
@@ -70,7 +70,7 @@
         "date": "2026-11-03",
         "time": "18:00"
       },
-      "reason": "规则检查通过，查询用户原始要求的 2026-11-03 18:00 是否可用",
+      "reason": "规则无风险，查询用户原始时段 2026-11-03 18:00 是否可用",
       "observation": "douyin 2026-11-03 18:00 已被 X90 占用；替代: ['19:00', '20:00', '16:00']",
       "next_action": "save_draft"
     },
@@ -85,11 +85,11 @@
             "date": "2026-11-03",
             "time": "19:00",
             "status": "pending_confirmation",
-            "note": "原时段 18:00 已被 X90 占用，改用最近的替代时段 19:00，需用户确认"
+            "note": "原时段 18:00 已被 X90 占用，建议改用同日最近可用替代时段 19:00，需用户确认"
           }
         ]
       },
-      "reason": "M01 规则通过但原时段被占用，按替代时段 19:00 保存为待确认草稿",
+      "reason": "原时段被占用，按规则从 alternatives 选 19:00 并标记 pending_confirmation 保存草稿",
       "observation": "失败 storage_unavailable: 草稿存储暂不可用，本次未写入",
       "next_action": "save_draft"
     },
@@ -102,13 +102,13 @@
             "channel": "douyin",
             "date": "2026-11-03",
             "material_id": "M01",
-            "note": "原时段 18:00 已被 X90 占用，改用最近的替代时段 19:00，需用户确认",
+            "note": "原时段 18:00 已被 X90 占用，建议改用同日最近可用替代时段 19:00，需用户确认",
             "status": "pending_confirmation",
             "time": "19:00"
           }
         ]
       },
-      "reason": "首次保存返回 storage_unavailable，按规则重试一次保存同一草稿",
+      "reason": "storage_unavailable 可重试一次，再次尝试保存同一草稿",
       "observation": "失败 storage_unavailable: 草稿存储暂不可用，本次未写入",
       "next_action": "finish"
     },
@@ -118,20 +118,17 @@
       "args": {
         "items": [
           {
-            "decision": "unresolved",
             "material_id": "M01",
-            "pending_questions": [
-              "草稿存储连续两次不可用，未能写入排期；请稍后重试，并确认是否接受替代时段 2026-11-03 19:00（原 18:00 已被 X90 占用）"
-            ],
+            "decision": "unresolved",
             "risk_reasons": [
-              "原时段 18:00 被 X90 占用，替代时段 19:00 需用户确认",
-              "save_draft 连续两次返回 storage_unavailable，草稿未写入"
+              "原时段 2026-11-03 18:00 已被 X90 占用，替代时段 19:00 需用户确认",
+              "草稿存储连续两次返回 storage_unavailable，草稿未写入，无法给出排期结论"
             ]
           }
         ],
-        "summary": "M01（秋冬穿搭 5 套通勤公式）元数据完整、douyin 渠道规则检查通过。用户要求的 2026-11-03 18:00 已被 X90 占用，拟改用替代时段 19:00 并标记为待确认。但 save_draft 连续两次返回 storage_unavailable，草稿未能写入，因此未排期成功，也未发布任何内容。请稍后重试并确认是否接受 19:00。"
+        "summary": "M01 元数据齐全、规则检查通过；但用户要求的 2026-11-03 18:00 已被 X90 占用，建议替代时段 19:00（需用户确认）。草稿保存两次均返回 storage_unavailable，未写入任何草稿，因此 M01 结论为 unresolved，未排期、未发布。"
       },
-      "reason": "M01 审核通过但原时段被占用，且草稿存储两次失败未写入，故结论为 unresolved",
+      "reason": "素材本身可排期，但草稿两次保存均因存储不可用失败，如实标记 unresolved",
       "observation": "已接受",
       "next_action": "end"
     }

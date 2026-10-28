@@ -80,17 +80,22 @@ class DraftStore:
         if cur and cur["content_hash"] == h:
             return {"draft_id": draft_id, "version": cur["version"], "outcome": "duplicate"}
         version = cur["version"] + 1 if cur else 1
-        self._drafts[draft_id] = {
-            "draft_id": draft_id,
-            "version": version,
-            "content_hash": h,
-            "entries": entries,
-            "published": False,
+        new = {
+            **self._drafts,
+            draft_id: {
+                "draft_id": draft_id,
+                "version": version,
+                "content_hash": h,
+                "entries": entries,
+                "published": False,
+            },
         }
+        # 先落盘再更新内存：写盘失败时内存保持原状，重试不会被误判为 duplicate
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(self._drafts, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.write_text(json.dumps(new, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
+        self._drafts = new
         return {"draft_id": draft_id, "version": version, "outcome": "updated" if cur else "created"}
 
     def all(self) -> dict:

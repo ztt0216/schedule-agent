@@ -7,15 +7,15 @@
      观察: 读取成功，必填字段齐全
      下一步: check_rules
 [03] check_rules {"material_id": "M02", "channel": "douyin"}
-     依据: M02 元数据齐全，需按抖音渠道规则检查风险
+     依据: M02 元数据完整，需按抖音渠道规则检查风险
      观察: 规则检查通过
      下一步: check_rules
 [04] check_rules {"material_id": "M05", "channel": "xiaohongshu"}
-     依据: M05 元数据齐全但授权状态为 pending，需按小红书规则检查风险
+     依据: M05 元数据完整但授权状态为 pending，需按小红书渠道规则检查风险
      观察: 风险: R02[verify] 版权授权待核验
      下一步: verify_license
 [05] verify_license {"material_id": "M05"}
-     依据: M05 规则检查返回 verify 级风险（版权授权待核验），需补查授权状态
+     依据: M05 触发 verify 级规则 R02，需补查版权授权最新状态
      观察: 授权 LIC-1005: verified（授权方已回传签署件）
      下一步: query_slots
 [06] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "20:00"}
@@ -27,11 +27,11 @@
      观察: xiaohongshu 2026-11-03 19:00 可用；替代: ['20:00', '18:00', '21:00']
      下一步: save_draft
 [08] save_draft {"entries": [{"material_id": "M02", "channel": "douyin", "date": "2026-11-03", "time": "20:00", "status": "confirmed", "note": "规则检查通过，用户原始时段可用"}, {"material_id": "M05", "channel": "xiaohongshu", "date": "2026-11-03", "time": "19:00", "status": "confirmed", "note": "版权授权补查为 verified，用户原始时段可用"}]}
-     依据: 两个素材均通过审核且用户原始时段可用，按原时段保存草稿（不发布）
+     依据: 两个素材均通过审核且用户原始时段可用，按原时段保存为 confirmed 草稿
      观察: 草稿 D-f2511c7586 v1 created（未发布）
      下一步: finish
-[09] finish {"items": [{"material_id": "M02", "decision": "scheduled", "suggested_time": "20:00", "risk_reasons": []}, {"material_id": "M05", "decision": "scheduled", "suggested_time": "19:00", "risk_reasons": ["R02 版权授权待核验，补查结果为 verified（授权方已回传签署件）"]}], "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586；M05 的版权授权经补查为 verified。草稿已保存，未发布任何内容。"}
-     依据: 两个素材均通过审核且原时段可用，已写入草稿 D-f2511c7586，提交结论
+[09] finish {"items": [{"material_id": "M02", "decision": "scheduled", "suggested_time": "20:00", "risk_reasons": []}, {"material_id": "M05", "decision": "scheduled", "suggested_time": "19:00", "risk_reasons": ["R02 版权授权待核验，补查结果为 verified（授权方已回传签署件）"]}], "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586。M05 的版权授权经补查为 verified。草稿已保存但未发布，需人工确认后再发布。"}
+     依据: 两个素材均通过审核、时段可用并已写入草稿 D-f2511c7586，故结论为 scheduled（仅排期草稿，未发布）
      观察: 已接受
      下一步: end
 
@@ -84,5 +84,5 @@
     "outcome": "created"
   },
   "published": false,
-  "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586；M05 的版权授权经补查为 verified。草稿已保存，未发布任何内容。"
+  "summary": "M02（抖音 2026-11-03 20:00）与 M05（小红书 2026-11-03 19:00）均按用户原始时段排入草稿 D-f2511c7586。M05 的版权授权经补查为 verified。草稿已保存但未发布，需人工确认后再发布。"
 }

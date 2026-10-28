@@ -19,16 +19,18 @@
         },
         "review_status": "passed",
         "risk_reasons": [],
-        "decision": "pending_confirmation",
-        "suggested_slot": {
-          "channel": "douyin",
-          "date": "2026-11-03",
-          "time": "19:00"
-        },
+        "decision": "unresolved",
+        "suggested_slot": null,
         "pending_questions": [
           "18:00 已被占用，建议改为 19:00，需用户确认",
           "草稿保存失败，未写入，需重新提交"
-        ]
+        ],
+        "unsaved_suggestion": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "19:00",
+          "status": "pending_confirmation"
+        }
       }
     ],
     "draft": {
@@ -36,7 +38,7 @@
       "error": "storage_unavailable"
     },
     "published": false,
-    "summary": "M01:pending_confirmation"
+    "summary": "M01:unresolved"
   },
   "trace": [
     {
@@ -117,15 +119,14 @@
         "items": [
           {
             "material_id": "M01",
-            "decision": "pending_confirmation",
-            "suggested_time": "19:00",
+            "decision": "unresolved",
             "pending_questions": [
               "18:00 已被占用，建议改为 19:00，需用户确认",
               "草稿保存失败，未写入，需重新提交"
             ]
           }
         ],
-        "summary": "M01:pending_confirmation"
+        "summary": "M01:unresolved"
       },
       "reason": "所有素材都已得出结论",
       "observation": "已接受",

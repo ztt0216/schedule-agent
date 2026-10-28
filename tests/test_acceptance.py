@@ -98,7 +98,11 @@ def test_save_failure_reported(run, store_path):
     assert report["task_status"] == "save_failed"
     assert report["draft"]["status"] == "failed"
     assert not store_path.exists()
-    assert any("保存失败" in q for q in item(report, "M01")["pending_questions"])
+    m01 = item(report, "M01")
+    # 保存失败时不能出现 scheduled / pending_confirmation 这类"已排期"结论
+    assert m01["decision"] == "unresolved" and m01["suggested_slot"] is None
+    assert m01["unsaved_suggestion"]["time"] == "19:00"
+    assert any("保存失败" in q for q in m01["pending_questions"])
 
 
 def test_save_failure_then_retry_succeeds(run):

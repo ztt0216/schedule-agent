@@ -2,7 +2,7 @@
 
 ## 测试结果
 
-`python -m pytest -q` → **26 passed**（Mock 策略 + 脚本化模型；离线、确定性）。
+`python -m pytest -q` → **29 passed**（Mock 策略 + 脚本化模型；离线、确定性）。
 
 ## 场景：预期与实际（Mock 模式）
 
@@ -68,6 +68,19 @@
 另外，冒烟测试中模型把 `suggested_time` 写成了 "2026-11-03 19:00"，被 finish 护栏拒绝，随后模型自行修正。之后我在 schema 里补上了 `HH:MM` 格式说明。
 
 **结论：** Mock 只能验证"正确的模型"能否走通流程；"不完美的模型"会把护栏反馈的质量问题暴露出来。护栏的报错必须准确且可执行，否则会把模型引向错误的动作。
+
+### 第三轮：代码评审发现的缺口与修复
+
+外部代码评审（基于 commit `818fd12`）指出 3 个缺口，均已复现并修复。修复第 2 个缺口时，新增的测试又发现了 1 个更深的问题：
+
+| 缺口 | 复现 | 修复 | 回归测试 |
+|---|---|---|---|
+| 保存失败后，护栏仍接受 `decision=scheduled`。报告里同时出现 `save_failed` 和"已排期"，结论自相矛盾 | 保存失败后提交 `scheduled`，护栏返回的 violations 为空 | finish 护栏只依据**实际写入**的条目；保存失败时只能给出 `unresolved`，建议时段放在 `unsaved_suggestion` 字段，不再填 `suggested_slot` | `test_finish_cannot_claim_scheduled_after_save_failure`、`test_save_failure_reported` |
+| 真实文件系统异常（如存储目录被同名文件占用）直接抛错，程序中断 | 抛出 `NotADirectoryError` 或 `FileExistsError` | `save_draft` 捕获 `OSError`，作为 `storage_error` 观察返回给模型，最终生成 `save_failed` 报告 | `test_real_storage_error_becomes_failed_report` |
+| `save_draft` 不校验时段合法性，`99:99` 也能写入草稿 | 跳过 `query_slots` 直接保存，返回 `ok` | 保存护栏按营业时段（08:00–23:00 整点）校验 | `test_invalid_time_rejected` |
+| **新发现**：`DraftStore.save` 先改内存、后写盘。写盘失败后重试，会被误判为 `duplicate` 并返回成功，实际上没有写入（也是虚报保存成功） | 由上面第 2 个测试发现：第二次保存返回"duplicate（未发布）" | 改为先写盘，成功后再更新内存 | 同上 |
+
+修复后重新录制了受影响的场景：Mock 的 `06a`；DeepSeek 的 `01`、`02`、`02b`、`06a`、`06b`。DeepSeek 在 `06a` 中按新规则给出 `unresolved`，报告不再出现矛盾的结论。
 
 ### 未验证
 

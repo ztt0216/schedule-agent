@@ -269,7 +269,11 @@ class ToolExecutor:
         if self._inject_fault("save_draft"):
             self.save_result = {"ok": False, "error": "storage_unavailable"}
             return {"ok": False, "error": "storage_unavailable", "retryable": True, "message": "草稿存储暂不可用，本次未写入"}
-        res = self.store.save(request_key(self.request), entries)
+        try:
+            res = self.store.save(request_key(self.request), entries)
+        except OSError as e:
+            self.save_result = {"ok": False, "error": "storage_error"}
+            return {"ok": False, "error": "storage_error", "retryable": True, "message": f"草稿写入失败（{type(e).__name__}），本次未写入"}
         self.save_result = {"ok": True, **res}
         return {"ok": True, **res, "published": False}
 
@@ -301,6 +305,9 @@ def validate_entries(ex: ToolExecutor, entries: list[dict]) -> list[str]:
             v.append(f"{mid}: 请求缺少 {', '.join(f.request_missing)}，不能代替用户选择，请返回 need_info")
         if (e.get("channel"), e.get("date")) != (req.get("channel"), req.get("date")):
             v.append(f"{mid}: 不得擅自改变渠道或日期（用户要求 {req.get('channel')} {req.get('date')}）")
+        oh = ex.ds.schedule["open_hours"]
+        if e.get("time") not in _hours(oh["start"], oh["end"]):
+            v.append(f"{mid}: 时段 {e.get('time')} 非法，可排时段为 {oh['start']}-{oh['end']} 整点")
         slot = (e.get("channel"), e.get("date"), e.get("time"))
         if slot in seen:
             v.append(f"{mid}: 与本草稿中其他素材时段重复 {e.get('time')}")

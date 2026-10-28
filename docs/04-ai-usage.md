@@ -12,7 +12,7 @@
 | 方案设计 | 工具划分、护栏设计（save_draft / finish 两处）、幂等键设计、事实字段由代码生成 |
 | 代码初稿 | `src/` 全部模块、`scripts/record_examples.py` |
 | 合成数据 | `data/` 下的素材、规则、排期 |
-| 测试 | `tests/` 下 26 个用例 |
+| 测试 | `tests/` 下 29 个用例 |
 | 文档初稿 | README 与 docs/01–05 |
 
 ## 协作流程：我 + AI
@@ -29,6 +29,6 @@
 
 ## 验证方式
 
-- `python -m pytest -q`：26 passed。
+- `python -m pytest -q`：29 passed。
 - Mock 运行记录：`examples/mock/`，12 个场景。
 - 真实模型（DeepSeek deepseek-chat）跑了两轮。第一轮暴露 4 个问题，修复后第二轮 12 个场景全部符合预期。详见 docs/03。
