@@ -1,0 +1,182 @@
+{
+  "request_file": "examples/requests/01_normal.json",
+  "mode": "mock",
+  "faults": {},
+  "max_steps": 20,
+  "schedule_override": null,
+  "report": {
+    "task_status": "completed",
+    "stop_reason": "finished",
+    "items": [
+      {
+        "material_id": "M02",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "20:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "scheduled",
+        "suggested_slot": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "20:00"
+        },
+        "pending_questions": []
+      },
+      {
+        "material_id": "M05",
+        "requested": {
+          "channel": "xiaohongshu",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "scheduled",
+        "suggested_slot": {
+          "channel": "xiaohongshu",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "pending_questions": []
+      }
+    ],
+    "draft": {
+      "status": "saved",
+      "draft_id": "D-f2511c7586",
+      "version": 1,
+      "outcome": "created"
+    },
+    "published": false,
+    "summary": "M02:scheduled；M05:scheduled"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M02"
+      },
+      "reason": "先读取 M02 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 2,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M02",
+        "channel": "douyin"
+      },
+      "reason": "M02 字段齐全，进行审核规则检查",
+      "observation": "规则检查通过",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 3,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "20:00"
+      },
+      "reason": "查询用户要求的 20:00 是否可用",
+      "observation": "douyin 2026-11-03 20:00 可用；替代: ['19:00', '22:00', '23:00']",
+      "next_action": "read_material"
+    },
+    {
+      "step": 4,
+      "action": "read_material",
+      "args": {
+        "material_id": "M05"
+      },
+      "reason": "先读取 M05 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 5,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M05",
+        "channel": "xiaohongshu"
+      },
+      "reason": "M05 字段齐全，进行审核规则检查",
+      "observation": "风险: R02[verify] 版权授权待核验",
+      "next_action": "verify_license"
+    },
+    {
+      "step": 6,
+      "action": "verify_license",
+      "args": {
+        "material_id": "M05"
+      },
+      "reason": "M05 授权状态为 pending，按 R02 补查授权",
+      "observation": "授权 LIC-1005: verified（授权方已回传签署件）",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 7,
+      "action": "query_slots",
+      "args": {
+        "channel": "xiaohongshu",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "reason": "查询用户要求的 19:00 是否可用",
+      "observation": "xiaohongshu 2026-11-03 19:00 可用；替代: ['20:00', '18:00', '21:00']",
+      "next_action": "save_draft"
+    },
+    {
+      "step": 8,
+      "action": "save_draft",
+      "args": {
+        "entries": [
+          {
+            "material_id": "M02",
+            "channel": "douyin",
+            "date": "2026-11-03",
+            "time": "20:00",
+            "status": "confirmed",
+            "note": "按用户要求时段"
+          },
+          {
+            "material_id": "M05",
+            "channel": "xiaohongshu",
+            "date": "2026-11-03",
+            "time": "19:00",
+            "status": "confirmed",
+            "note": "按用户要求时段"
+          }
+        ]
+      },
+      "reason": "所有素材已判定，保存 2 条排期草稿",
+      "observation": "草稿 D-f2511c7586 v1 created（未发布）",
+      "next_action": "finish"
+    },
+    {
+      "step": 9,
+      "action": "finish",
+      "args": {
+        "items": [
+          {
+            "material_id": "M02",
+            "decision": "scheduled",
+            "suggested_time": "20:00"
+          },
+          {
+            "material_id": "M05",
+            "decision": "scheduled",
+            "suggested_time": "19:00"
+          }
+        ],
+        "summary": "M02:scheduled；M05:scheduled"
+      },
+      "reason": "所有素材都已得出结论",
+      "observation": "已接受",
+      "next_action": "end"
+    }
+  ]
+}

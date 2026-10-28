@@ -1,0 +1,27 @@
+{
+  "_note": "场景：原 18:00 占用（X90）已撤下，用于验证更换占用时段后重复提交。",
+  "open_hours": {
+    "start": "08:00",
+    "end": "23:00"
+  },
+  "occupied": [
+    {
+      "channel": "douyin",
+      "date": "2026-11-03",
+      "time": "21:00",
+      "material_id": "X91"
+    },
+    {
+      "channel": "douyin",
+      "date": "2026-11-03",
+      "time": "17:00",
+      "material_id": "X92"
+    },
+    {
+      "channel": "xiaohongshu",
+      "date": "2026-11-03",
+      "time": "12:00",
+      "material_id": "X93"
+    }
+  ]
+}

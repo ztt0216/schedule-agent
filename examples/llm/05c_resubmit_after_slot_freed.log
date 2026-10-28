@@ -1,0 +1,82 @@
+[01] read_material {"material_id": "M01"}
+     依据: 先读取 M01 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: read_material
+[02] read_material {"material_id": "M02"}
+     依据: 先读取 M02 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[03] check_rules {"material_id": "M01", "channel": "douyin"}
+     依据: M01 元数据完整，需按抖音渠道规则检查风险
+     观察: 规则检查通过
+     下一步: check_rules
+[04] check_rules {"material_id": "M02", "channel": "douyin"}
+     依据: M02 元数据完整，需按抖音渠道规则检查风险
+     观察: 规则检查通过
+     下一步: query_slots
+[05] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: 查询 M01 用户指定的 18:00 时段是否可用
+     观察: douyin 2026-11-03 18:00 可用；替代: ['19:00', '20:00', '16:00']
+     下一步: query_slots
+[06] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "19:00"}
+     依据: 查询 M02 用户指定的 19:00 时段是否可用
+     观察: douyin 2026-11-03 19:00 可用；替代: ['20:00', '18:00', '22:00']
+     下一步: save_draft
+[07] save_draft {"entries": [{"material_id": "M01", "channel": "douyin", "date": "2026-11-03", "time": "18:00", "status": "confirmed", "note": "用户原始时段，规则检查通过，时段可用"}, {"material_id": "M02", "channel": "douyin", "date": "2026-11-03", "time": "19:00", "status": "confirmed", "note": "用户原始时段，规则检查通过，时段可用"}]}
+     依据: 两个素材规则检查通过且用户原始时段均可用，按原时段保存草稿
+     观察: 草稿 D-4b47dc5417 v2 updated（未发布）
+     下一步: finish
+[08] finish {"items": [{"material_id": "M01", "decision": "scheduled", "suggested_time": "18:00", "risk_reasons": []}, {"material_id": "M02", "decision": "scheduled", "suggested_time": "19:00", "risk_reasons": []}], "summary": "M01、M02 元数据完整、规则检查无风险，抖音 2026-11-03 的 18:00 与 19:00 时段均可用，已按用户原始时段保存排期草稿 D-4b47dc5417（未发布）。"}
+     依据: 两个素材均通过规则检查、原时段可用并已写入草稿，提交结论
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "completed",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M01",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [],
+      "decision": "scheduled",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "pending_questions": []
+    },
+    {
+      "material_id": "M02",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [],
+      "decision": "scheduled",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "pending_questions": []
+    }
+  ],
+  "draft": {
+    "status": "saved",
+    "draft_id": "D-4b47dc5417",
+    "version": 2,
+    "outcome": "updated"
+  },
+  "published": false,
+  "summary": "M01、M02 元数据完整、规则检查无风险，抖音 2026-11-03 的 18:00 与 19:00 时段均可用，已按用户原始时段保存排期草稿 D-4b47dc5417（未发布）。"
+}

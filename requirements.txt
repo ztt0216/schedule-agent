@@ -1,0 +1,4 @@
+# 运行时只依赖 Python 标准库（>=3.10）。
+# certifi 可选：macOS 上 python.org 版 Python 缺根证书时用于 HTTPS 校验。
+certifi
+pytest>=8

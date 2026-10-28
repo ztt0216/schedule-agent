@@ -1,0 +1,110 @@
+[01] read_material {"material_id": "M04"}
+     依据: 先读取 M04 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: read_material
+[02] read_material {"material_id": "M06"}
+     依据: 先读取 M06 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: read_material
+[03] read_material {"material_id": "M07"}
+     依据: 先读取 M07 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[04] check_rules {"material_id": "M04", "channel": "douyin"}
+     依据: M04 元数据齐全，需按抖音渠道规则检查风险等级
+     观察: 风险: R01[block] 广告法绝对化用语：标题含 全网第一、第一、100%有效
+     下一步: check_rules
+[05] check_rules {"material_id": "M06", "channel": "douyin"}
+     依据: M06 元数据齐全但授权状态为 pending，需按抖音规则检查
+     观察: 风险: R02[verify] 版权授权待核验
+     下一步: check_rules
+[06] check_rules {"material_id": "M07", "channel": "douyin"}
+     依据: M07 元数据齐全，需按抖音渠道规则检查风险等级
+     观察: 风险: R03[confirm] 商业合作内容需商务确认
+     下一步: verify_license
+[07] verify_license {"material_id": "M06"}
+     依据: M06 规则检查为 verify 级，需补查版权授权最新状态
+     观察: 授权 LIC-1006: expired（授权已于 2026-09-30 到期）
+     下一步: query_slots
+[08] query_slots {"channel": "douyin", "date": "2026-11-05", "time": "20:00"}
+     依据: M07 仅需商务确认，先查询用户要求的 20:00 时段是否可用
+     观察: douyin 2026-11-05 20:00 可用；替代: ['21:00', '19:00', '22:00']
+     下一步: save_draft
+[09] save_draft {"entries": [{"material_id": "M07", "channel": "douyin", "date": "2026-11-05", "time": "20:00", "status": "pending_confirmation", "note": "时段可用，但商业合作内容需商务确认后方可确定"}]}
+     依据: M04 被 block 阻断、M06 授权过期阻断，仅 M07 可排期且因 confirm 级风险标记为待确认
+     观察: 草稿 D-af6cd4d92f v1 created（未发布）
+     下一步: finish
+[10] finish {"items": [{"material_id": "M04", "decision": "blocked", "risk_reasons": ["R01 广告法绝对化用语：标题含“全网第一”“第一”“100%有效”"]}, {"material_id": "M06", "decision": "blocked", "risk_reasons": ["R02 版权授权待核验，补查结果为 expired：授权已于 2026-09-30 到期"]}, {"material_id": "M07", "decision": "pending_confirmation", "suggested_time": "20:00", "risk_reasons": ["R03 商业合作内容需商务确认"], "pending_questions": ["联名耳机开箱内容是否已获得品牌方商务确认？确认后可将 2026-11-05 20:00 抖音时段转为确定排期"]}], "summary": "M04 因广告法绝对化用语被阻断；M06 因授权已过期被阻断；M07 时段可用但需商务确认，已作为待确认项写入草稿 D-af6cd4d92f（未发布）。"}
+     依据: 三个素材均已得出结论，草稿已保存且未发布，提交最终结论
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "awaiting_user",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M04",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-05",
+        "time": "12:00"
+      },
+      "review_status": "blocked",
+      "risk_reasons": [
+        "R01 广告法绝对化用语：标题含 全网第一、第一、100%有效",
+        "R01 广告法绝对化用语：标题含“全网第一”“第一”“100%有效”"
+      ],
+      "decision": "blocked",
+      "suggested_slot": null,
+      "pending_questions": []
+    },
+    {
+      "material_id": "M06",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-05",
+        "time": "13:00"
+      },
+      "review_status": "blocked",
+      "risk_reasons": [
+        "R02 版权授权已过期",
+        "R02 版权授权待核验，补查结果为 expired：授权已于 2026-09-30 到期"
+      ],
+      "decision": "blocked",
+      "suggested_slot": null,
+      "pending_questions": []
+    },
+    {
+      "material_id": "M07",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-05",
+        "time": "20:00"
+      },
+      "review_status": "needs_confirmation",
+      "risk_reasons": [
+        "R03 商业合作内容需商务确认",
+        "R03 商业合作内容需商务确认"
+      ],
+      "decision": "pending_confirmation",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-05",
+        "time": "20:00"
+      },
+      "pending_questions": [
+        "联名耳机开箱内容是否已获得品牌方商务确认？确认后可将 2026-11-05 20:00 抖音时段转为确定排期"
+      ]
+    }
+  ],
+  "draft": {
+    "status": "saved",
+    "draft_id": "D-af6cd4d92f",
+    "version": 1,
+    "outcome": "created"
+  },
+  "published": false,
+  "summary": "M04 因广告法绝对化用语被阻断；M06 因授权已过期被阻断；M07 时段可用但需商务确认，已作为待确认项写入草稿 D-af6cd4d92f（未发布）。"
+}

@@ -1,0 +1,53 @@
+[01] read_material {"material_id": "M01"}
+     依据: 先读取 M01 元数据，确认必填字段是否齐全再进入规则检查
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[02] check_rules {"material_id": "M01", "channel": "douyin"}
+     依据: 元数据无缺失，按抖音渠道检查 M01 的审核风险等级
+     观察: 规则检查通过
+     下一步: query_slots
+[03] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "19:00"}
+     依据: 用户已在 confirmations 中确认 M01 为 19:00，优先查询该时段是否可用
+     观察: douyin 2026-11-03 19:00 可用；替代: ['20:00', '22:00', '16:00']
+     下一步: save_draft
+[04] save_draft {"entries": [{"material_id": "M01", "channel": "douyin", "date": "2026-11-03", "time": "19:00", "status": "confirmed", "note": "用户已确认时段 19:00，查询可用，规则检查通过"}]}
+     依据: M01 规则检查通过且用户确认的 19:00 时段可用，按 confirmed 保存草稿
+     观察: 草稿 D-e376ad0d2b v2 updated（未发布）
+     下一步: finish
+[05] finish {"items": [{"material_id": "M01", "decision": "scheduled", "suggested_time": "19:00", "risk_reasons": []}], "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed，未发布。"}
+     依据: M01 元数据齐全、规则检查无风险，用户确认的 19:00 时段可用并已写入草稿
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "completed",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M01",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [],
+      "decision": "scheduled",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "pending_questions": []
+    }
+  ],
+  "draft": {
+    "status": "saved",
+    "draft_id": "D-e376ad0d2b",
+    "version": 2,
+    "outcome": "updated"
+  },
+  "published": false,
+  "summary": "M01 已按用户确认的 2026-11-03 19:00（douyin）写入排期草稿 D-e376ad0d2b，状态 confirmed，未发布。"
+}

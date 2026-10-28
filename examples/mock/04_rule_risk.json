@@ -1,0 +1,206 @@
+{
+  "request_file": "examples/requests/04_rule_risk.json",
+  "mode": "mock",
+  "faults": {},
+  "max_steps": 20,
+  "schedule_override": null,
+  "report": {
+    "task_status": "awaiting_user",
+    "stop_reason": "finished",
+    "items": [
+      {
+        "material_id": "M04",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-05",
+          "time": "12:00"
+        },
+        "review_status": "blocked",
+        "risk_reasons": [
+          "R01 广告法绝对化用语：标题含 全网第一、第一、100%有效"
+        ],
+        "decision": "blocked",
+        "suggested_slot": null,
+        "pending_questions": []
+      },
+      {
+        "material_id": "M06",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-05",
+          "time": "13:00"
+        },
+        "review_status": "blocked",
+        "risk_reasons": [
+          "R02 版权授权已过期"
+        ],
+        "decision": "blocked",
+        "suggested_slot": null,
+        "pending_questions": []
+      },
+      {
+        "material_id": "M07",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-05",
+          "time": "20:00"
+        },
+        "review_status": "needs_confirmation",
+        "risk_reasons": [
+          "R03 商业合作内容需商务确认"
+        ],
+        "decision": "pending_confirmation",
+        "suggested_slot": {
+          "channel": "douyin",
+          "date": "2026-11-05",
+          "time": "20:00"
+        },
+        "pending_questions": [
+          "商业合作内容需商务确认"
+        ]
+      }
+    ],
+    "draft": {
+      "status": "saved",
+      "draft_id": "D-af6cd4d92f",
+      "version": 1,
+      "outcome": "created"
+    },
+    "published": false,
+    "summary": "M04:blocked；M06:blocked；M07:pending_confirmation"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M04"
+      },
+      "reason": "先读取 M04 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 2,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M04",
+        "channel": "douyin"
+      },
+      "reason": "M04 字段齐全，进行审核规则检查",
+      "observation": "风险: R01[block] 广告法绝对化用语：标题含 全网第一、第一、100%有效",
+      "next_action": "read_material"
+    },
+    {
+      "step": 3,
+      "action": "read_material",
+      "args": {
+        "material_id": "M06"
+      },
+      "reason": "先读取 M06 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 4,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M06",
+        "channel": "douyin"
+      },
+      "reason": "M06 字段齐全，进行审核规则检查",
+      "observation": "风险: R02[verify] 版权授权待核验",
+      "next_action": "verify_license"
+    },
+    {
+      "step": 5,
+      "action": "verify_license",
+      "args": {
+        "material_id": "M06"
+      },
+      "reason": "M06 授权状态为 pending，按 R02 补查授权",
+      "observation": "授权 LIC-1006: expired（授权已于 2026-09-30 到期）",
+      "next_action": "read_material"
+    },
+    {
+      "step": 6,
+      "action": "read_material",
+      "args": {
+        "material_id": "M07"
+      },
+      "reason": "先读取 M07 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 7,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M07",
+        "channel": "douyin"
+      },
+      "reason": "M07 字段齐全，进行审核规则检查",
+      "observation": "风险: R03[confirm] 商业合作内容需商务确认",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 8,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-05",
+        "time": "20:00"
+      },
+      "reason": "查询用户要求的 20:00 是否可用",
+      "observation": "douyin 2026-11-05 20:00 可用；替代: ['21:00', '19:00', '22:00']",
+      "next_action": "save_draft"
+    },
+    {
+      "step": 9,
+      "action": "save_draft",
+      "args": {
+        "entries": [
+          {
+            "material_id": "M07",
+            "channel": "douyin",
+            "date": "2026-11-05",
+            "time": "20:00",
+            "status": "pending_confirmation",
+            "note": "商业合作内容需商务确认"
+          }
+        ]
+      },
+      "reason": "所有素材已判定，保存 1 条排期草稿",
+      "observation": "草稿 D-af6cd4d92f v1 created（未发布）",
+      "next_action": "finish"
+    },
+    {
+      "step": 10,
+      "action": "finish",
+      "args": {
+        "items": [
+          {
+            "material_id": "M04",
+            "decision": "blocked"
+          },
+          {
+            "material_id": "M06",
+            "decision": "blocked"
+          },
+          {
+            "material_id": "M07",
+            "decision": "pending_confirmation",
+            "suggested_time": "20:00",
+            "pending_questions": [
+              "商业合作内容需商务确认"
+            ]
+          }
+        ],
+        "summary": "M04:blocked；M06:blocked；M07:pending_confirmation"
+      },
+      "reason": "所有素材都已得出结论",
+      "observation": "已接受",
+      "next_action": "end"
+    }
+  ]
+}

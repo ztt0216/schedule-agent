@@ -1,0 +1,48 @@
+[01] read_material {"material_id": "M01"}
+     依据: 先读取 M01 元数据，确认必填字段
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[02] check_rules {"material_id": "M01", "channel": "douyin"}
+     依据: M01 字段齐全，进行审核规则检查
+     观察: 规则检查通过
+     下一步: query_slots
+[03] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: 查询用户要求的 18:00 是否可用
+     观察: 失败 tool_unavailable: query_slots 暂时不可用
+     下一步: query_slots
+[04] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: 时段查询工具失败，重试一次
+     观察: 失败 tool_unavailable: query_slots 暂时不可用
+     下一步: finish
+[05] finish {"items": [{"material_id": "M01", "decision": "unresolved", "pending_questions": ["时段查询连续失败，无法确定排期，请稍后重试"]}], "summary": "M01:unresolved"}
+     依据: 所有素材都已得出结论
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "incomplete",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M01",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [],
+      "decision": "unresolved",
+      "suggested_slot": null,
+      "pending_questions": [
+        "时段查询连续失败，无法确定排期，请稍后重试"
+      ]
+    }
+  ],
+  "draft": {
+    "status": "not_saved"
+  },
+  "published": false,
+  "summary": "M01:unresolved"
+}

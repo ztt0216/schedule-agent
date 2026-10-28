@@ -1,0 +1,79 @@
+{
+  "_note": "合成素材元数据，仅用于本项目演示，不含真实业务数据。",
+  "materials": [
+    {
+      "material_id": "M01",
+      "title": "秋冬穿搭 5 套通勤公式",
+      "type": "video",
+      "duration_sec": 58,
+      "cover_url": "https://example.invalid/covers/m01.jpg",
+      "license_id": "LIC-1001",
+      "license_status": "valid",
+      "tags": ["fashion"]
+    },
+    {
+      "material_id": "M02",
+      "title": "一分钟学会手机延时摄影",
+      "type": "video",
+      "duration_sec": 62,
+      "cover_url": "https://example.invalid/covers/m02.jpg",
+      "license_id": "LIC-1002",
+      "license_status": "valid",
+      "tags": ["tutorial"]
+    },
+    {
+      "material_id": "M03",
+      "title": "城市夜跑 vlog",
+      "type": "video",
+      "duration_sec": 95,
+      "cover_url": "",
+      "license_id": null,
+      "license_status": "unknown",
+      "tags": ["vlog"]
+    },
+    {
+      "material_id": "M04",
+      "title": "全网第一的剪辑神器，100%有效涨粉",
+      "type": "video",
+      "duration_sec": 45,
+      "cover_url": "https://example.invalid/covers/m04.jpg",
+      "license_id": "LIC-1004",
+      "license_status": "valid",
+      "tags": ["promo"]
+    },
+    {
+      "material_id": "M05",
+      "title": "周末露营装备清单",
+      "type": "video",
+      "duration_sec": 73,
+      "cover_url": "https://example.invalid/covers/m05.jpg",
+      "license_id": "LIC-1005",
+      "license_status": "pending",
+      "tags": ["outdoor"]
+    },
+    {
+      "material_id": "M06",
+      "title": "经典老歌翻唱合集",
+      "type": "video",
+      "duration_sec": 180,
+      "cover_url": "https://example.invalid/covers/m06.jpg",
+      "license_id": "LIC-1006",
+      "license_status": "pending",
+      "tags": ["music"]
+    },
+    {
+      "material_id": "M07",
+      "title": "联名耳机开箱体验",
+      "type": "video",
+      "duration_sec": 66,
+      "cover_url": "https://example.invalid/covers/m07.jpg",
+      "license_id": "LIC-1007",
+      "license_status": "valid",
+      "tags": ["brand_collab"]
+    }
+  ],
+  "license_registry": {
+    "LIC-1005": {"status": "verified", "note": "授权方已回传签署件"},
+    "LIC-1006": {"status": "expired", "note": "授权已于 2026-09-30 到期"}
+  }
+}

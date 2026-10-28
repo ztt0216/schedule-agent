@@ -1,0 +1,83 @@
+{
+  "request_file": "examples/requests/01_normal.json",
+  "mode": "mock",
+  "faults": {},
+  "max_steps": 3,
+  "schedule_override": null,
+  "report": {
+    "task_status": "incomplete",
+    "stop_reason": "step_limit(3)",
+    "items": [
+      {
+        "material_id": "M02",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "20:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "unresolved",
+        "suggested_slot": null,
+        "pending_questions": [
+          "任务未完成，未得出结论"
+        ]
+      },
+      {
+        "material_id": "M05",
+        "requested": {
+          "channel": "xiaohongshu",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "review_status": "not_checked",
+        "risk_reasons": [],
+        "decision": "unresolved",
+        "suggested_slot": null,
+        "pending_questions": [
+          "任务未完成，未得出结论"
+        ]
+      }
+    ],
+    "draft": {
+      "status": "not_saved"
+    },
+    "published": false,
+    "summary": ""
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M02"
+      },
+      "reason": "先读取 M02 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 2,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M02",
+        "channel": "douyin"
+      },
+      "reason": "M02 字段齐全，进行审核规则检查",
+      "observation": "规则检查通过",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 3,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "20:00"
+      },
+      "reason": "查询用户要求的 20:00 是否可用",
+      "observation": "douyin 2026-11-03 20:00 可用；替代: ['19:00', '22:00', '23:00']",
+      "next_action": "end"
+    }
+  ]
+}

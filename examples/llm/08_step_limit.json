@@ -1,0 +1,81 @@
+{
+  "request_file": "examples/requests/01_normal.json",
+  "mode": "llm:deepseek-chat",
+  "faults": {},
+  "max_steps": 3,
+  "schedule_override": null,
+  "report": {
+    "task_status": "incomplete",
+    "stop_reason": "step_limit(3)",
+    "items": [
+      {
+        "material_id": "M02",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "20:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "unresolved",
+        "suggested_slot": null,
+        "pending_questions": [
+          "任务未完成，未得出结论"
+        ]
+      },
+      {
+        "material_id": "M05",
+        "requested": {
+          "channel": "xiaohongshu",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "review_status": "not_checked",
+        "risk_reasons": [],
+        "decision": "unresolved",
+        "suggested_slot": null,
+        "pending_questions": [
+          "任务未完成，未得出结论"
+        ]
+      }
+    ],
+    "draft": {
+      "status": "not_saved"
+    },
+    "published": false,
+    "summary": ""
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M02"
+      },
+      "reason": "先读取 M02 元数据以确认必填字段是否齐全",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "read_material"
+    },
+    {
+      "step": 2,
+      "action": "read_material",
+      "args": {
+        "material_id": "M05"
+      },
+      "reason": "先读取 M05 元数据以确认必填字段是否齐全",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 3,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M02",
+        "channel": "douyin"
+      },
+      "reason": "M02 元数据完整，需按抖音渠道规则检查风险等级",
+      "observation": "规则检查通过",
+      "next_action": "end"
+    }
+  ]
+}

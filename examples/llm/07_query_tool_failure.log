@@ -1,0 +1,48 @@
+[01] read_material {"material_id": "M01"}
+     依据: 先读取 M01 元数据，确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[02] check_rules {"material_id": "M01", "channel": "douyin"}
+     依据: 元数据无缺失，按 douyin 渠道规则检查 M01 风险
+     观察: 规则检查通过
+     下一步: query_slots
+[03] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: 规则无风险，查询用户原始要求的 2026-11-03 18:00 是否可用
+     观察: 失败 tool_unavailable: query_slots 暂时不可用
+     下一步: query_slots
+[04] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: query_slots 首次返回 tool_unavailable，按规则重试一次确认时段可用性
+     观察: 失败 tool_unavailable: query_slots 暂时不可用
+     下一步: finish
+[05] finish {"items": [{"material_id": "M01", "decision": "unresolved", "risk_reasons": ["query_slots 连续两次返回 tool_unavailable，无法确认 2026-11-03 18:00 时段是否可用，故未排期"]}], "summary": "M01（秋冬穿搭 5 套通勤公式）元数据完整、douyin 渠道规则检查无风险；但 query_slots 连续两次返回 tool_unavailable，无法确认 2026-11-03 18:00 是否可用，因此未生成草稿，M01 标记为 unresolved，待时段查询恢复后重新排期。未发布任何内容。"}
+     依据: M01 元数据齐全且规则检查通过，但时段查询工具两次不可用，无法确认时段，只能标记 unresolved
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "incomplete",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M01",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [
+        "query_slots 连续两次返回 tool_unavailable，无法确认 2026-11-03 18:00 时段是否可用，故未排期"
+      ],
+      "decision": "unresolved",
+      "suggested_slot": null,
+      "pending_questions": []
+    }
+  ],
+  "draft": {
+    "status": "not_saved"
+  },
+  "published": false,
+  "summary": "M01（秋冬穿搭 5 套通勤公式）元数据完整、douyin 渠道规则检查无风险；但 query_slots 连续两次返回 tool_unavailable，无法确认 2026-11-03 18:00 是否可用，因此未生成草稿，M01 标记为 unresolved，待时段查询恢复后重新排期。未发布任何内容。"
+}

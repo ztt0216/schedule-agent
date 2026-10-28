@@ -1,0 +1,79 @@
+[01] read_material {"material_id": "M03"}
+     依据: 请求信息完整，先读取 M03 元数据以确认必填字段是否齐全
+     观察: 读取成功，缺失字段: ['cover_url', 'license_id']
+     下一步: read_material
+[02] read_material {"material_id": "M02"}
+     依据: M02 缺少 time，先读取元数据确认素材本身是否完整
+     观察: 读取成功，必填字段齐全
+     下一步: read_material
+[03] read_material {"material_id": "M99"}
+     依据: 读取 M99 元数据以确认素材是否存在
+     观察: 失败 not_found: 素材库中没有 M99
+     下一步: check_rules
+[04] check_rules {"material_id": "M02", "channel": "douyin"}
+     依据: M02 元数据完整，需按抖音渠道规则检查风险等级
+     观察: 规则检查通过
+     下一步: finish
+[05] finish {"items": [{"material_id": "M03", "decision": "need_info", "pending_questions": ["请补充封面图 cover_url", "请补充版权授权 license_id（当前 license_status 为 unknown）"]}, {"material_id": "M02", "decision": "need_info", "pending_questions": ["请补充期望的发布时段（HH:MM 整点），我不会代为挑选时段"]}, {"material_id": "M99", "decision": "need_info", "pending_questions": ["素材库中不存在 M99，请确认素材 ID 是否正确或提供有效素材"]}], "summary": "本次未生成排期草稿。M03 元数据缺少 cover_url 与 license_id；M02 元数据与规则检查均通过，但请求未给出发布时段，需用户指定；M99 在素材库中不存在。请补充上述信息后我再继续排期。"}
+     依据: 三个素材均无法进入排期：M03 缺必填字段、M02 缺用户指定时段、M99 不存在，故未保存任何草稿
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "awaiting_user",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M03",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-04",
+        "time": "12:00"
+      },
+      "review_status": "missing_info",
+      "risk_reasons": [],
+      "decision": "need_info",
+      "suggested_slot": null,
+      "pending_questions": [
+        "请补充封面图 cover_url",
+        "请补充版权授权 license_id（当前 license_status 为 unknown）"
+      ]
+    },
+    {
+      "material_id": "M02",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-04",
+        "time": null
+      },
+      "review_status": "missing_info",
+      "risk_reasons": [],
+      "decision": "need_info",
+      "suggested_slot": null,
+      "pending_questions": [
+        "请补充期望的发布时段（HH:MM 整点），我不会代为挑选时段"
+      ]
+    },
+    {
+      "material_id": "M99",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-04",
+        "time": "15:00"
+      },
+      "review_status": "missing_info",
+      "risk_reasons": [],
+      "decision": "need_info",
+      "suggested_slot": null,
+      "pending_questions": [
+        "素材库中不存在 M99，请确认素材 ID 是否正确或提供有效素材"
+      ]
+    }
+  ],
+  "draft": {
+    "status": "not_saved"
+  },
+  "published": false,
+  "summary": "本次未生成排期草稿。M03 元数据缺少 cover_url 与 license_id；M02 元数据与规则检查均通过，但请求未给出发布时段，需用户指定；M99 在素材库中不存在。请补充上述信息后我再继续排期。"
+}

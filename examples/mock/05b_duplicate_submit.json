@@ -1,0 +1,177 @@
+{
+  "request_file": "examples/requests/05_multi.json",
+  "mode": "mock",
+  "faults": {},
+  "max_steps": 20,
+  "schedule_override": null,
+  "report": {
+    "task_status": "awaiting_user",
+    "stop_reason": "finished",
+    "items": [
+      {
+        "material_id": "M01",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "18:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "pending_confirmation",
+        "suggested_slot": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "20:00"
+        },
+        "pending_questions": [
+          "18:00 已被占用，建议改为 20:00，需用户确认"
+        ]
+      },
+      {
+        "material_id": "M02",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [],
+        "decision": "scheduled",
+        "suggested_slot": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "pending_questions": []
+      }
+    ],
+    "draft": {
+      "status": "saved",
+      "draft_id": "D-4b47dc5417",
+      "version": 1,
+      "outcome": "duplicate"
+    },
+    "published": false,
+    "summary": "M01:pending_confirmation；M02:scheduled"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M01"
+      },
+      "reason": "先读取 M01 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 2,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M01",
+        "channel": "douyin"
+      },
+      "reason": "M01 字段齐全，进行审核规则检查",
+      "observation": "规则检查通过",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 3,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "reason": "查询用户要求的 18:00 是否可用",
+      "observation": "douyin 2026-11-03 18:00 已被 X90 占用；替代: ['19:00', '20:00', '16:00']",
+      "next_action": "read_material"
+    },
+    {
+      "step": 4,
+      "action": "read_material",
+      "args": {
+        "material_id": "M02"
+      },
+      "reason": "先读取 M02 元数据，确认必填字段",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 5,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M02",
+        "channel": "douyin"
+      },
+      "reason": "M02 字段齐全，进行审核规则检查",
+      "observation": "规则检查通过",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 6,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "reason": "查询用户要求的 19:00 是否可用",
+      "observation": "douyin 2026-11-03 19:00 可用；替代: ['20:00', '22:00', '16:00']",
+      "next_action": "save_draft"
+    },
+    {
+      "step": 7,
+      "action": "save_draft",
+      "args": {
+        "entries": [
+          {
+            "material_id": "M01",
+            "channel": "douyin",
+            "date": "2026-11-03",
+            "time": "20:00",
+            "status": "pending_confirmation",
+            "note": "18:00 已被占用，建议改为 20:00，需用户确认"
+          },
+          {
+            "material_id": "M02",
+            "channel": "douyin",
+            "date": "2026-11-03",
+            "time": "19:00",
+            "status": "confirmed",
+            "note": "按用户要求时段"
+          }
+        ]
+      },
+      "reason": "所有素材已判定，保存 2 条排期草稿",
+      "observation": "草稿 D-4b47dc5417 v1 duplicate（未发布）",
+      "next_action": "finish"
+    },
+    {
+      "step": 8,
+      "action": "finish",
+      "args": {
+        "items": [
+          {
+            "material_id": "M01",
+            "decision": "pending_confirmation",
+            "suggested_time": "20:00",
+            "pending_questions": [
+              "18:00 已被占用，建议改为 20:00，需用户确认"
+            ]
+          },
+          {
+            "material_id": "M02",
+            "decision": "scheduled",
+            "suggested_time": "19:00"
+          }
+        ],
+        "summary": "M01:pending_confirmation；M02:scheduled"
+      },
+      "reason": "所有素材都已得出结论",
+      "observation": "已接受",
+      "next_action": "end"
+    }
+  ]
+}

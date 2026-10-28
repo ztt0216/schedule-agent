@@ -1,0 +1,20 @@
+[project]
+name = "schedule-agent"
+version = "0.1.0"
+description = "素材审核与发布排期 Agent（小影 2027 校招 AI Agent 笔试 · 第 1 题）"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+testpaths = ["tests"]

@@ -1,0 +1,118 @@
+{
+  "request_file": "examples/requests/03_missing_info.json",
+  "mode": "mock",
+  "faults": {},
+  "max_steps": 20,
+  "schedule_override": null,
+  "report": {
+    "task_status": "awaiting_user",
+    "stop_reason": "finished",
+    "items": [
+      {
+        "material_id": "M03",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-04",
+          "time": "12:00"
+        },
+        "review_status": "missing_info",
+        "risk_reasons": [],
+        "decision": "need_info",
+        "suggested_slot": null,
+        "pending_questions": [
+          "请补充素材字段: cover_url, license_id"
+        ]
+      },
+      {
+        "material_id": "M02",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-04",
+          "time": null
+        },
+        "review_status": "missing_info",
+        "risk_reasons": [],
+        "decision": "need_info",
+        "suggested_slot": null,
+        "pending_questions": [
+          "请补充发布要求: time"
+        ]
+      },
+      {
+        "material_id": "M99",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-04",
+          "time": "15:00"
+        },
+        "review_status": "missing_info",
+        "risk_reasons": [],
+        "decision": "need_info",
+        "suggested_slot": null,
+        "pending_questions": [
+          "素材库中不存在该素材，请确认素材 ID"
+        ]
+      }
+    ],
+    "draft": {
+      "status": "not_saved"
+    },
+    "published": false,
+    "summary": "M03:need_info；M02:need_info；M99:need_info"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M03"
+      },
+      "reason": "先读取 M03 元数据，确认必填字段",
+      "observation": "读取成功，缺失字段: ['cover_url', 'license_id']",
+      "next_action": "read_material"
+    },
+    {
+      "step": 2,
+      "action": "read_material",
+      "args": {
+        "material_id": "M99"
+      },
+      "reason": "先读取 M99 元数据，确认必填字段",
+      "observation": "失败 not_found: 素材库中没有 M99",
+      "next_action": "finish"
+    },
+    {
+      "step": 3,
+      "action": "finish",
+      "args": {
+        "items": [
+          {
+            "material_id": "M03",
+            "decision": "need_info",
+            "pending_questions": [
+              "请补充素材字段: cover_url, license_id"
+            ]
+          },
+          {
+            "material_id": "M02",
+            "decision": "need_info",
+            "pending_questions": [
+              "请补充发布要求: time"
+            ]
+          },
+          {
+            "material_id": "M99",
+            "decision": "need_info",
+            "pending_questions": [
+              "素材库中不存在该素材，请确认素材 ID"
+            ]
+          }
+        ],
+        "summary": "M03:need_info；M02:need_info；M99:need_info"
+      },
+      "reason": "所有素材都已得出结论",
+      "observation": "已接受",
+      "next_action": "end"
+    }
+  ]
+}

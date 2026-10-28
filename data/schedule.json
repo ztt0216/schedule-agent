@@ -1,0 +1,10 @@
+{
+  "_note": "已有排期（合成）。每个渠道每个整点时段最多一条。",
+  "open_hours": {"start": "08:00", "end": "23:00"},
+  "occupied": [
+    {"channel": "douyin", "date": "2026-11-03", "time": "18:00", "material_id": "X90"},
+    {"channel": "douyin", "date": "2026-11-03", "time": "21:00", "material_id": "X91"},
+    {"channel": "douyin", "date": "2026-11-03", "time": "17:00", "material_id": "X92"},
+    {"channel": "xiaohongshu", "date": "2026-11-03", "time": "12:00", "material_id": "X93"}
+  ]
+}

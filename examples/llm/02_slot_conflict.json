@@ -1,0 +1,119 @@
+{
+  "request_file": "examples/requests/02_slot_conflict.json",
+  "mode": "llm:deepseek-chat",
+  "faults": {},
+  "max_steps": 20,
+  "schedule_override": null,
+  "report": {
+    "task_status": "awaiting_user",
+    "stop_reason": "finished",
+    "items": [
+      {
+        "material_id": "M01",
+        "requested": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "18:00"
+        },
+        "review_status": "passed",
+        "risk_reasons": [
+          "原时段 2026-11-03 18:00 已被 X90 占用，改用替代时段 19:00，未经用户确认"
+        ],
+        "decision": "pending_confirmation",
+        "suggested_slot": {
+          "channel": "douyin",
+          "date": "2026-11-03",
+          "time": "19:00"
+        },
+        "pending_questions": [
+          "是否同意将 M01 在 douyin 的发布时间从 18:00 改为 19:00？（其他可选：20:00、16:00）"
+        ]
+      }
+    ],
+    "draft": {
+      "status": "saved",
+      "draft_id": "D-e376ad0d2b",
+      "version": 1,
+      "outcome": "created"
+    },
+    "published": false,
+    "summary": "M01 元数据齐全、规则检查通过；原时段 18:00 被占用，已按替代时段 19:00 保存为待确认草稿（草稿 D-e376ad0d2b，未发布），等待用户确认时段变更。"
+  },
+  "trace": [
+    {
+      "step": 1,
+      "action": "read_material",
+      "args": {
+        "material_id": "M01"
+      },
+      "reason": "先读取 M01 元数据，确认必填字段是否齐全",
+      "observation": "读取成功，必填字段齐全",
+      "next_action": "check_rules"
+    },
+    {
+      "step": 2,
+      "action": "check_rules",
+      "args": {
+        "material_id": "M01",
+        "channel": "douyin"
+      },
+      "reason": "元数据无缺失，按 douyin 渠道规则检查 M01 风险等级",
+      "observation": "规则检查通过",
+      "next_action": "query_slots"
+    },
+    {
+      "step": 3,
+      "action": "query_slots",
+      "args": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "reason": "规则检查通过，查询用户原始要求的 2026-11-03 18:00 是否可用",
+      "observation": "douyin 2026-11-03 18:00 已被 X90 占用；替代: ['19:00', '20:00', '16:00']",
+      "next_action": "save_draft"
+    },
+    {
+      "step": 4,
+      "action": "save_draft",
+      "args": {
+        "entries": [
+          {
+            "material_id": "M01",
+            "channel": "douyin",
+            "date": "2026-11-03",
+            "time": "19:00",
+            "status": "pending_confirmation",
+            "note": "原时段 18:00 已被 X90 占用，改用最近替代时段 19:00，需用户确认"
+          }
+        ]
+      },
+      "reason": "M01 规则通过但原时段被占用，按替代时段 19:00 保存为待确认草稿",
+      "observation": "草稿 D-e376ad0d2b v1 created（未发布）",
+      "next_action": "finish"
+    },
+    {
+      "step": 5,
+      "action": "finish",
+      "args": {
+        "items": [
+          {
+            "material_id": "M01",
+            "decision": "pending_confirmation",
+            "suggested_time": "19:00",
+            "risk_reasons": [
+              "原时段 2026-11-03 18:00 已被 X90 占用，改用替代时段 19:00，未经用户确认"
+            ],
+            "pending_questions": [
+              "是否同意将 M01 在 douyin 的发布时间从 18:00 改为 19:00？（其他可选：20:00、16:00）"
+            ]
+          }
+        ],
+        "summary": "M01 元数据齐全、规则检查通过；原时段 18:00 被占用，已按替代时段 19:00 保存为待确认草稿（草稿 D-e376ad0d2b，未发布），等待用户确认时段变更。"
+      },
+      "reason": "M01 已按替代时段写入草稿并需用户确认，提交结论",
+      "observation": "已接受",
+      "next_action": "end"
+    }
+  ]
+}

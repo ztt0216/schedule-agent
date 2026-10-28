@@ -1,0 +1,86 @@
+[01] read_material {"material_id": "M01"}
+     依据: 先读取 M01 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: read_material
+[02] read_material {"material_id": "M02"}
+     依据: 先读取 M02 元数据以确认必填字段是否齐全
+     观察: 读取成功，必填字段齐全
+     下一步: check_rules
+[03] check_rules {"material_id": "M01", "channel": "douyin"}
+     依据: M01 元数据齐全，需按抖音渠道规则检查风险
+     观察: 规则检查通过
+     下一步: check_rules
+[04] check_rules {"material_id": "M02", "channel": "douyin"}
+     依据: M02 元数据齐全，需按抖音渠道规则检查风险
+     观察: 规则检查通过
+     下一步: query_slots
+[05] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "18:00"}
+     依据: 查询 M01 用户原始要求时段 18:00 是否可用
+     观察: douyin 2026-11-03 18:00 已被 X90 占用；替代: ['19:00', '20:00', '16:00']
+     下一步: query_slots
+[06] query_slots {"channel": "douyin", "date": "2026-11-03", "time": "19:00"}
+     依据: 查询 M02 用户原始要求时段 19:00 是否可用
+     观察: douyin 2026-11-03 19:00 可用；替代: ['20:00', '22:00', '16:00']
+     下一步: save_draft
+[07] save_draft {"entries": [{"material_id": "M01", "channel": "douyin", "date": "2026-11-03", "time": "20:00", "status": "pending_confirmation", "note": "原时段 18:00 已被 X90 占用，改用替代时段 20:00（19:00 已分配给 M02），需用户确认"}, {"material_id": "M02", "channel": "douyin", "date": "2026-11-03", "time": "19:00", "status": "confirmed", "note": "用户原始时段 19:00 可用"}]}
+     依据: M02 原时段可用按 confirmed 保存；M01 原时段被占用，改用替代时段 20:00 并标记 pending_confirmation
+     观察: 草稿 D-4b47dc5417 v2 updated（未发布）
+     下一步: finish
+[08] finish {"items": [{"material_id": "M01", "decision": "pending_confirmation", "suggested_time": "20:00", "risk_reasons": ["原时段 18:00 已被 X90 占用，改用同日替代时段 20:00"], "pending_questions": ["是否同意将 M01 从 18:00 调整到 2026-11-03 20:00 发布？"]}, {"material_id": "M02", "decision": "scheduled", "suggested_time": "19:00"}], "summary": "两个素材元数据齐全、规则检查通过。M02 按原时段 19:00 排入草稿（confirmed）；M01 原时段 18:00 被 X90 占用，改用替代时段 20:00 并标记 pending_confirmation，等待用户确认。草稿已保存但未发布。"}
+     依据: M02 按用户原时段排入草稿；M01 因原时段被占用改为替代时段，需用户确认
+     观察: 已接受
+     下一步: end
+
+=== 报告 ===
+{
+  "task_status": "awaiting_user",
+  "stop_reason": "finished",
+  "items": [
+    {
+      "material_id": "M01",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "18:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [
+        "原时段 18:00 已被 X90 占用，改用同日替代时段 20:00"
+      ],
+      "decision": "pending_confirmation",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "20:00"
+      },
+      "pending_questions": [
+        "是否同意将 M01 从 18:00 调整到 2026-11-03 20:00 发布？"
+      ]
+    },
+    {
+      "material_id": "M02",
+      "requested": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "review_status": "passed",
+      "risk_reasons": [],
+      "decision": "scheduled",
+      "suggested_slot": {
+        "channel": "douyin",
+        "date": "2026-11-03",
+        "time": "19:00"
+      },
+      "pending_questions": []
+    }
+  ],
+  "draft": {
+    "status": "saved",
+    "draft_id": "D-4b47dc5417",
+    "version": 2,
+    "outcome": "updated"
+  },
+  "published": false,
+  "summary": "两个素材元数据齐全、规则检查通过。M02 按原时段 19:00 排入草稿（confirmed）；M01 原时段 18:00 被 X90 占用，改用替代时段 20:00 并标记 pending_confirmation，等待用户确认。草稿已保存但未发布。"
+}

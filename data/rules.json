@@ -1,0 +1,32 @@
+{
+  "_note": "审核规则（合成）。level: block=阻断，confirm=需人工确认，verify=需补查后再判定。",
+  "required_fields": ["title", "duration_sec", "cover_url", "license_id"],
+  "rules": [
+    {
+      "rule_id": "R01",
+      "name": "广告法绝对化用语",
+      "level": "block",
+      "field": "title",
+      "banned_terms": ["全网第一", "第一", "最强", "100%有效", "根治"]
+    },
+    {
+      "rule_id": "R02",
+      "name": "版权授权待核验",
+      "level": "verify",
+      "when": {"license_status": "pending"},
+      "followup_tool": "verify_license"
+    },
+    {
+      "rule_id": "R03",
+      "name": "商业合作内容需商务确认",
+      "level": "confirm",
+      "when": {"tag": "brand_collab"}
+    },
+    {
+      "rule_id": "R04",
+      "name": "单条时长上限",
+      "level": "block",
+      "max_duration_sec": {"douyin": 600, "xiaohongshu": 300}
+    }
+  ]
+}
