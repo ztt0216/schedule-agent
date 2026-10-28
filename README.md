@@ -70,7 +70,7 @@ python scripts/record_examples.py --mode llm    # 用真实模型生成 examples
 
 每个场景都有两份文件：`.json` 是完整报告加结构化 trace，`.log` 是可读的逐步记录。
 
-真实模型（DeepSeek）的运行记录放在 `examples/llm/`，12 个场景全部符合预期。第一轮暴露问题的记录放在 `examples/llm_round1/`。详见 [docs/03-evaluation.md](docs/03-evaluation.md)。
+真实模型（DeepSeek）的运行记录放在 `examples/llm/`，覆盖 12 个场景，其中受第三轮修复影响的场景已重新录制；所存记录符合对应预期，未统计重复运行成功率。第一轮暴露问题的记录放在 `examples/llm_round1/`。详见 [docs/03-evaluation.md](docs/03-evaluation.md)。
 
 ## 目录
 
@@ -86,3 +86,22 @@ examples/    requests/ 输入；mock/ 与 llm/ 是实际输出和 trace
 tests/       验收测试与护栏测试
 docs/        01 需求 · 02 方案 · 03 评估 · 04 AI 使用 · 05 复盘
 ```
+
+## 文档阅读顺序
+
+| 文档 | 重点 |
+|---|---|
+| [需求](docs/01-requirements.md) | 业务目标、输入示例、状态语义与合成数据覆盖 |
+| [方案](docs/02-solution.md) | 工具循环、模型与护栏分工、幂等和存储一致性 |
+| [评估](docs/03-evaluation.md) | 预期/实际结果、真实模型迭代、复核步骤与证据边界 |
+| [AI 使用说明](docs/04-ai-usage.md) | Claude Code / Codex 辅助范围、个人贡献与凭据处理 |
+| [复盘](docs/05-retrospective.md) | 问题根因、工程改进和下一步优先级 |
+
+### 结果应如何判断
+
+- `scheduled` / `confirmed` 表示草稿中的排期状态，不表示真实发布；`published` 始终为 false。
+- 保存失败时返回 `save_failed`、`draft.status=failed` 和 `decision=unresolved`；建议保存在 `unsaved_suggestion`，不能当成已保存排期。
+- CLI 退出码不是业务成功标志，应检查结构化报告的 `task_status`、每项 `decision` 和 `draft.status`。
+- 用户确认及重复提交场景需要共享同一 `--store` 文件。批量记录脚本会重建自己的演示存储并覆盖对应 examples 输出。
+
+当前为合成数据、单进程、本地草稿原型；未实现跨草稿占用预留、独立风险审批、完整输入校验或生产部署。真实模型记录为有限样例，尚无重复实验得到的稳定成功率。详细边界见方案与评估文档。

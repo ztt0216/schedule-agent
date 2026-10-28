@@ -35,7 +35,7 @@
 模型：DeepSeek `deepseek-chat`，temperature=0，通过 OpenAI 兼容接口调用。运行日期：2026-10-28。
 运行命令：`python scripts/record_examples.py --mode llm`。
 
-### 第二轮（最终版本，`examples/llm/`）：12 个场景全部符合预期
+### 当前真实模型记录（`examples/llm/`）：12 个场景的记录符合预期
 
 | 场景 | 实际结果 | 与预期是否一致 |
 |---|---|---|
@@ -89,9 +89,58 @@
 
 ## 失败与限制
 
-1. **Mock 不能证明真实模型的决策效果。** MockLLM 是规则策略，只用来验证流程、护栏和状态。真实模型能否稳定选对动作，要以 `examples/llm/` 为准。
+1. **Mock 不能证明真实模型的决策效果。** MockLLM 是规则策略，只用来验证流程、护栏和状态。`examples/llm/` 提供单次运行证据；稳定性仍需重复实验验证。
 2. **替代时段只在同一天内找。** 跨日期改期属于修改硬性要求，当前只能返回 need_info，让用户提供日期。
 3. **时段粒度是整点，每个渠道每个时段只能放一条素材。** 规则也是简化的合成规则：关键词匹配、标签、时长。
 4. **草稿存储是本地 JSON，没有并发锁。** 两个进程同时保存同一请求时可能互相覆盖。
 5. **护栏只能拦住"不该做的"，不能保证"选得最好"。** 例如模型选了一个合法但不是最近的替代时段，护栏不会拒绝。
 6. **重复提交的判定以请求诉求为键。** 同一批素材的诉求一旦改变（例如改了时间），会被视为新请求，生成新草稿。
+
+## 评估证据如何阅读
+
+本项目区分三类证据，避免把流程跑通等同于模型效果：
+
+| 证据 | 可以说明 | 不能说明 |
+|---|---|---|
+| `tests/` 的自动化测试 | 在已定义输入下，Mock、护栏、幂等与报告逻辑满足断言 | 任意模型、任意输入下均正确 |
+| `examples/mock/` 的 12 组记录 | 离线执行可复制，失败注入、确认和重复提交流程可观察 | 真实模型具备相同决策能力 |
+| `examples/llm/` 的 DeepSeek 记录 | 所存运行中模型根据观察选择工具，并完成对应场景 | 统计成功率、跨模型泛化或生产稳定性 |
+
+`examples/llm/` 包含第二轮的记录，以及第三轮修复后重新录制的受影响场景，并非所有文件都在同一轮重录。第一轮仅保留四个偏差场景，位于 `examples/llm_round1/`；未保留完整的第一轮 12 场景记录。没有原始接口响应、账单或重复实验统计，模型名称来自运行配置和导出记录。
+
+## 可复制的复核步骤
+
+以下命令从仓库根目录运行。Mock 不需要 API key。
+
+```bash
+python -m pytest -q
+python scripts/record_examples.py --mode mock
+```
+
+批量记录脚本会重建 `.state/examples_mock/` 并覆盖 examples/mock 的输出。同组场景共享草稿存储，因此确认和重复提交的版本号具有可检查的上下文。单独运行确认场景可能产生 v1；这不等于顺序复跑中的 v2 行为失效。
+
+如需保留仓库记录，可使用独立目录执行单个场景：
+
+```bash
+PYTHONPATH=src python -m schedule_agent run examples/requests/02_slot_conflict.json --mock --store .state/review/drafts.json --out .state/review/conflict.json
+PYTHONPATH=src python -m schedule_agent run examples/requests/02b_slot_conflict_confirmed.json --mock --store .state/review/drafts.json --out .state/review/confirmed.json
+```
+
+第一轮应看到 awaiting_user、pending_confirmation、saved、published=false；第二轮应看到 completed、scheduled、updated，两个报告的 draft_id 相同。若这个存储文件之前已有结果，created/updated/duplicate 和版本号会受到已有内容影响。
+
+## 本次独立复核记录
+
+2026-10-28，Codex 对代码版本 `9840f1c` 进行复核：
+
+- 使用独立虚拟环境，Python 3.14、pytest 9.2.0，执行 `python -m pytest -q`，结果为 **29 passed**。
+- 重新生成全部 12 个 Mock 场景，均成功运行。
+- 核对 Mock 和所存 DeepSeek 的 06a 报告：task_status=save_failed、draft.status=failed、decision=unresolved、suggested_slot=null，未保存建议单独列出。
+- 本次复核没有再次调用 DeepSeek；真实模型效果依据仓库已有记录。
+
+12 个脚本场景成功运行表示命令执行完成；业务预期主要由自动化断言和报告核对验证，脚本打印的勾号本身不等于完整验收。CLI 当前对于业务未完成也可以返回退出码 0，自动化集成应读取 JSON 中的 task_status 和 draft.status。
+
+## 后续实验设计（尚未执行）
+
+建议在固定数据和提示词下重复运行每个真实模型场景，记录任务状态正确率、越权确认次数、虚报保存次数、有效工具调用数、护栏拒绝次数，以及耗时与费用。应分别报告首次成功与重试后成功，保留失败记录，避免只选择成功样例。
+
+进一步应新增未覆盖或覆盖不足的场景：多个不同草稿之间的冲突、并发写入、同素材多次发布、独立商务审批、模型返回类型错误、模型网络不可用，以及三个替代候选不足但全天仍有空闲时段。以上属于后续验证计划，没有计入当前通过数量。
